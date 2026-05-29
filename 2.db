@@ -1,0 +1,31 @@
+CREATE TABLE Sailors(sid NUMBER PRIMARY KEY,sname VARCHAR2(20),rating NUMBER CHECK(rating BETWEEN 1 AND 10),age NUMBER);
+
+CREATE TABLE Boats(bid NUMBER PRIMARY KEY,bname VARCHAR2(20),color VARCHAR2(20));
+
+CREATE TABLE Reserves(sid NUMBER,bid NUMBER,day DATE,PRIMARY KEY(sid,bid,day),FOREIGN KEY(sid) REFERENCES Sailors(sid),FOREIGN KEY(bid) REFERENCES Boats(bid));
+
+INSERT INTO Sailors VALUES(1,'Ravi',8,25);
+INSERT INTO Sailors VALUES(2,'Arun',7,30);
+INSERT INTO Sailors VALUES(3,'John',9,28);
+INSERT INTO Sailors VALUES(4,'Smith',6,35);
+INSERT INTO Sailors VALUES(5,'David',5,22);
+
+INSERT INTO Boats VALUES(101,'BoatA','Red');
+INSERT INTO Boats VALUES(102,'BoatB','Blue');
+INSERT INTO Boats VALUES(103,'BoatC','Green');
+INSERT INTO Boats VALUES(104,'BoatD','Red');
+INSERT INTO Boats VALUES(105,'BoatE','White');
+
+INSERT INTO Reserves VALUES(1,101,'10-JAN-24');
+INSERT INTO Reserves VALUES(2,102,'11-JAN-24');
+INSERT INTO Reserves VALUES(3,101,'12-JAN-24');
+INSERT INTO Reserves VALUES(4,104,'10-JAN-24');
+INSERT INTO Reserves VALUES(1,103,'10-JAN-24');
+
+SELECT * FROM Sailors S,Reserves R WHERE S.sid=R.sid AND R.bid=101;
+
+SELECT S.sname FROM Sailors S,Boats B,Reserves R WHERE S.sid=R.sid AND B.bid=R.bid AND B.color='Red' ORDER BY S.age;
+
+SELECT S.sname FROM Sailors S WHERE EXISTS (SELECT * FROM Reserves R WHERE R.sid = S.sid);
+
+SELECT S.sname FROM Sailors S WHERE NOT EXISTS (SELECT bid FROM Boats B WHERE NOT EXISTS (SELECT * FROM Reserves R WHERE R.sid=S.sid AND R.bid=B.bid));
